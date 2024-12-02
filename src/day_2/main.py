@@ -10,6 +10,7 @@ def part1():
                 safe_count += 1
     print("Part 1:", safe_count)
 
+
 def part1_validate(nums):
     previous = None
     ascending = None
@@ -36,6 +37,7 @@ def part2():
     safe_count = 0
     with open("input.txt") as fin:
         for line in fin:
+            # valid = part2_validate_bruteforce(list(map(int, line.strip().split())), True)
             valid = part2_validate_efficient(list(map(int, line.strip().split())), True)
             if valid:
                 safe_count += 1
@@ -109,6 +111,7 @@ def part2_validate_bruteforce(nums, tolerable=False):
 
         previous = current
     return True
+
 
 if __name__ == "__main__":
     part1()
