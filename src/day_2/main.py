@@ -44,7 +44,7 @@ def part2():
     print("Part 2:", safe_count)
 
 
-# O(n), not very elegant
+# O(n) (O(4n) to be exact), not very elegant
 def part2_validate_efficient(nums: list[int], toleratable=False):
     previous = None
     ascending = None
@@ -52,10 +52,11 @@ def part2_validate_efficient(nums: list[int], toleratable=False):
         if previous is None:
             previous = current
             continue
-        
+
         if not (1 <= abs(current - previous) <= 3):
             if not toleratable:
                 return False
+            # Assume that problematic number is either at index, index - 1, or index - 2
             return (
                 part2_validate_efficient(nums[:index] + nums[index + 1:]) or
                 part2_validate_efficient(nums[:index - 1] + nums[index:]) or
@@ -70,6 +71,7 @@ def part2_validate_efficient(nums: list[int], toleratable=False):
         if (current > previous) is not ascending:
             if not toleratable:
                 return False
+            # Assume that problematic number is either at index, index - 1, or index - 2
             return (
                 part2_validate_efficient(nums[:index] + nums[index + 1:]) or
                 part2_validate_efficient(nums[:index - 1] + nums[index:]) or
