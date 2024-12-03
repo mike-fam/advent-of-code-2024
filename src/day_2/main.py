@@ -61,10 +61,8 @@ def part2_validate_efficient(nums: list[int], tolerable=False):
             continue
 
         if not (1 <= abs(current - previous) <= 3):
-            if not tolerable:
-                return False
             # Assume that problematic number is either at index, index - 1, or index - 2
-            return (
+            return tolerable and (
                 part2_validate_efficient(nums[:index] + nums[index + 1:]) or
                 part2_validate_efficient(nums[:index - 1] + nums[index:]) or
                 part2_validate_efficient(nums[:index - 2] + nums[index - 1:])
@@ -76,10 +74,8 @@ def part2_validate_efficient(nums: list[int], tolerable=False):
             continue
         
         if (current > previous) is not ascending:
-            if not tolerable:
-                return False
             # Assume that problematic number is either at index, index - 1, or index - 2
-            return (
+            return tolerable and (
                 part2_validate_efficient(nums[:index] + nums[index + 1:]) or
                 part2_validate_efficient(nums[:index - 1] + nums[index:]) or
                 part2_validate_efficient(nums[:index - 2] + nums[index - 1:])
@@ -99,9 +95,7 @@ def part2_validate_efficient_nicer(nums: list[int], tolerable=False):
             continue
 
         if not (1 <= abs(current - previous) <= 3):
-            if not tolerable:
-                return False
-            return part2_validate_efficient_nicer(nums[:index] + nums[index + 1:])
+            return tolerable and part2_validate_efficient_nicer(nums[:index] + nums[index + 1:])
             
         if ascending is None:
             ascending = current > previous
@@ -109,9 +103,7 @@ def part2_validate_efficient_nicer(nums: list[int], tolerable=False):
             continue
         
         if (current > previous) is not ascending:
-            if not tolerable:
-                return False
-            return part2_validate_efficient_nicer(nums[:index] + nums[index + 1:])
+            return tolerable and part2_validate_efficient_nicer(nums[:index] + nums[index + 1:])
 
 
         previous = current
