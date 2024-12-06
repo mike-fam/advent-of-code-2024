@@ -135,7 +135,46 @@ def part2():
     for valid_update in valid_updates:
         total += valid_update[len(valid_update) // 2]
     print("Part 2:", total)
+    print("Cycle detected", detect_cycle_with_path(graph))
 
+
+def detect_cycle_with_path(graph):
+    def dfs(vertex, path):
+        if vertex in visiting:
+            # Cycle detected, extract the cycle path
+            cycle_start_index = path.index(vertex)
+            cycle = path[cycle_start_index:] + [vertex]
+            return cycle
+
+        if vertex in visited:
+            # vertex already processed, no cycle
+            return None
+
+        # Mark the vertex as visiting
+        visiting.add(vertex)
+        path.append(vertex)
+
+        for neighbor in graph.get(vertex, []):
+            result = dfs(neighbor, path)
+            if result:
+                return result
+
+        # Move the vertex from visiting to visited
+        visiting.remove(vertex)
+        visited.add(vertex)
+        path.pop()
+
+        return None
+
+    visited = set()  # vertexs that have been fully processed
+    visiting = set()  # vertexs that are currently in the recursion stack
+
+    for vertex in graph:
+        result = dfs(vertex, [])
+        if result:
+            return result  # Return the first detected cycle
+
+    return None  # No cycles detected
 
 
 if __name__ == "__main__":
