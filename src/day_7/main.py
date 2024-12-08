@@ -91,6 +91,7 @@ def validate_sequence_prune(result: int, sequence: list[int], reverse_operators:
 
     for reverse_operator, validator in zip(reverse_operators, validators):
         if not validator(result, sequence[-1]):
+            # Prune all paths that are known to be invalid
             continue
         if validate_sequence_prune(reverse_operator(result, sequence[-1]), sequence[:-1], reverse_operators, validators):
             return True
@@ -130,6 +131,8 @@ part2_prune = solution_factory_prune([rev_mul, rev_add, rev_concat], [divisible,
 
 
 if __name__ == "__main__":
+    # Both approaches are O(2^n) in worst case, but prune solution implements an AB-pruning-like functionality
+    # https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
     part1_prune()  #  0.006251s
     part1_brute()  #  0.340681s
     part2_prune()  #  0.010736s
