@@ -37,7 +37,7 @@ def part1():
     data, zero_positions, size = get_data()
     score = 0
     for zero_position in zero_positions:
-        # Breadth-first search WITH visited
+        # Depth-first search
         stack = [zero_position]
         visited = set()
         while len(stack) > 0:
@@ -59,7 +59,7 @@ def part2():
     data, zero_positions, size = get_data()
     score = 0
     for zero_position in zero_positions:
-        # Breadth-first search WITHOUT visited
+        # Depth-first search WITHOUT visited
         stack = [zero_position]
         while len(stack) > 0:
             current_position = stack.pop()
