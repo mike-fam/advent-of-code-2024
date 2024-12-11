@@ -9,10 +9,10 @@ def timed(arg=None):
         custom_name = arg if isinstance(arg, str) else None
         @wraps(func)
         def wrapper(*args, **kwargs):
-            start_time = time.perf_counter()
+            start_time_time = time.perf_counter()
             result = func(*args, **kwargs)
-            end_time = time.perf_counter()
-            elapsed_time = end_time - start_time
+            end_time_time = time.perf_counter()
+            elapsed_time = end_time_time - start_time_time
             function_name = custom_name or func.__name__
             print(f"Function '{function_name}' executed in {elapsed_time:.6f} seconds.")
             return result
@@ -65,9 +65,9 @@ def fast_blink(occurrences: defaultdict[int, int], steps=1):
 
 
 # Helper to show elapsed time of part 2 (naive)
-def print_elapsed(task_name, start_time, stop_event):
+def print_elapsed(task_name, start_time_time, stop_event):
     while True:
-        elapsed = time.perf_counter() - start_time
+        elapsed = time.perf_counter() - start_time_time
         print(f"\r{task_name}: {elapsed:.2f}s elapsed", end="")
         if stop_event.is_set():
             break
@@ -75,50 +75,50 @@ def print_elapsed(task_name, start_time, stop_event):
 
 
 def part1_slow():
-    start = time.perf_counter()
+    start_time = time.perf_counter()
     sequence = get_data()
     result = len(blink(sequence, 25))
-    end = time.perf_counter()
-    print(f"Part 1 (slow): {result} ({end - start:.4f}s)")
+    end_time = time.perf_counter()
+    print(f"Part 1 (slow): {result} ({end_time - start_time:.4f}s)")
 
 
 def part2_slow():
     sequence = get_data()
     # Blocking code
-    start = time.perf_counter()
+    start_time = time.perf_counter()
     stop_event = threading.Event()
-    t = threading.Thread(target=print_elapsed, args=("Part 2 (slow)", start, stop_event))
+    t = threading.Thread(target=print_elapsed, args=("Part 2 (slow)", start_time, stop_event))
     t.start()
     try:
-        result = len(blink(sequence, 75))  # Your blocking code
+        result = len(blink(sequence, 75))
     finally:
         stop_event.set()
         t.join()  # Wait for the thread to finish
 
-    end = time.perf_counter()
-    print(f"\rPart 2 (slow): {result} ({end - start:.4f}s)")
+    end_time = time.perf_counter()
+    print(f"\rPart 2 (slow): {result} ({end_time - start_time:.4f}s)")
 
 
 def part1_fast():
-    start = time.perf_counter()
+    start_time = time.perf_counter()
     sequence = get_data()
     occurrences = defaultdict(int)
     for i in sequence:
         occurrences[i] += 1
     result = sum(fast_blink(occurrences, 25).values())
-    end = time.perf_counter()
-    print(f"Part 1 (fast): {result} ({end - start:.4f}s)")
+    end_time = time.perf_counter()
+    print(f"Part 1 (fast): {result} ({end_time - start_time:.4f}s)")
 
 
 def part2_fast():
-    start = time.perf_counter()
+    start_time = time.perf_counter()
     sequence = get_data()
     occurrences = defaultdict(int)
     for i in sequence:
         occurrences[i] += 1
     result = sum(fast_blink(occurrences, 75).values())
-    end = time.perf_counter()
-    print(f"Part 2 (fast): {result} ({end - start:.4f}s)")
+    end_time = time.perf_counter()
+    print(f"Part 2 (fast): {result} ({end_time - start_time:.4f}s)")
 
 
 if __name__ == "__main__":
