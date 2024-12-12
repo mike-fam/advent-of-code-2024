@@ -89,68 +89,6 @@ def find_regions(data: dict[CoordinatePair, str], size: CoordinatePair):
     return regions
 
 
-def incorporate_new_edges(edges: set[tuple[CoordinatePair, CoordinatePair]], new_edge: CoordinatePair, direction: str):
-    final_edges: set[tuple[CoordinatePair, CoordinatePair]] = edges.copy()
-    if direction == "vertical":
-        pivot = 0
-        variable = 1
-    else:
-        pivot = 1
-        variable = 0
-    incorporated = False
-    for old_edge_start, old_edge_end in edges:
-        pivot_coord: int = old_edge_start[pivot]
-        new_edge_pivot: int = new_edge[pivot]
-        variable_start: int = old_edge_start[variable]
-        variable_end: int = old_edge_end[variable]
-        new_edge_variable: int = new_edge[variable]
-        if pivot_coord != new_edge_pivot:
-            continue
-        if new_edge_variable < variable_start - 1:
-            continue
-        if new_edge_variable > variable_end + 1:
-            continue
-        incorporated = True
-        final_edges.remove((old_edge_start, old_edge_end))
-        # Same overlapping 1-length edge, edges cancel out
-        if variable_start == new_edge_variable and variable_end == new_edge_variable:
-            break
-        # New edge at beginning tip of old edge, strip beginning tip
-        if variable_start == new_edge_variable:
-            new_variable = variable_start + 1
-            new_start = (new_variable, pivot_coord) if pivot == 1 else (pivot_coord, new_variable)
-            final_edges.add((new_start, old_edge_end))
-            break
-        # New edge at ending tip of old edge, strip ending tip
-        if variable_end == new_edge_variable:
-            new_variable = variable_end - 1
-            new_end = (new_variable, pivot_coord) if pivot == 1 else (pivot_coord, new_variable)
-            final_edges.add((old_edge_start, new_end))
-            break
-        # New edge next to ending tip of old edge, join edges
-        if variable_end + 1 == new_edge_variable:
-            new_end = (new_edge_variable, pivot_coord) if pivot == 1 else (pivot_coord, new_edge_variable)
-            final_edges.add((old_edge_start, new_end))
-            break
-        # New edge next to starting tip of old edge, join edges
-        if variable_start - 1 == new_edge_variable:
-            new_start = (new_edge_variable, pivot_coord) if pivot == 1 else (pivot_coord, new_edge_variable)
-            final_edges.add((new_start, old_edge_end))
-            break
-        # New edge at the middle of existing edge, break edge
-        if variable_start < new_edge_variable < variable_end:
-            new_variable_end_1 = new_edge_variable - 1
-            new_variable_start_2 = new_edge_variable + 1
-            new_end_1 = (new_variable_end_1, pivot_coord) if pivot == 1 else (pivot_coord, new_variable_end_1)
-            new_start_2 = (new_variable_start_2, pivot_coord) if pivot == 1 else (pivot_coord, new_variable_start_2)
-            final_edges.add((old_edge_start, new_end_1))
-            final_edges.add((new_start_2, old_edge_end))
-            break
-    if not incorporated:
-        final_edges.add((new_edge, new_edge))
-    return final_edges
-
-
 def get_edges(region: set[CoordinatePair]):
     horizontal_edges: defaultdict[int, set[CoordinatePair]] = defaultdict(set)
     vertical_edges: defaultdict[int, set[CoordinatePair]] = defaultdict(set)
