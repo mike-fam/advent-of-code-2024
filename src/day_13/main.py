@@ -106,7 +106,7 @@ def solve(machine):
 
 def get_cost(machines):
     cost = 0
-    for i, machine in enumerate(machines):
+    for machine in machines:
         x, y = solve(machine)
         if x != int(x) or y != int(y):
             # Unsolvable. x and y are expected to be whole numbers
