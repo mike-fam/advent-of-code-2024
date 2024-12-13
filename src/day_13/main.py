@@ -52,7 +52,6 @@ def get_data():
         return machines
 
 
-# Sieve of Eratosthenes
 def is_prime(potential_prime: int):
     for i in range(2, math.ceil(potential_prime ** (1 / 2))):
         if potential_prime % i == 0:
