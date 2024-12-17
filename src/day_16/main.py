@@ -159,3 +159,74 @@ def part1():
     print(f"Part 1: {distances[end]}")
 
 
+def find_turn_points(path):
+    previous_direction = previous_position = None
+    intersections = set()
+    for position in path:
+        if previous_position is None:
+            previous_position = position
+            continue
+        current_direction = position_delta(position, previous_position)
+        if previous_direction is None:
+            previous_direction = current_direction
+            previous_position = position
+            continue
+        if current_direction != previous_direction:
+            intersections.add(previous_position)
+        previous_position = position
+        previous_direction = current_direction
+    return intersections
+
+
+def extract_path(previous: dict[CoordinatePair, CoordinatePair], end: CoordinatePair):
+    current_position = end
+    path = []
+    while True:
+        if current_position is None:
+            path.reverse()
+            return path
+        path.append(current_position)
+        current_position = previous[current_position]
+
+
+@timed
+def part2():
+    walls, start, end = get_data()
+    distances, previous = dijkstra(walls, start, end)
+    path = extract_path(previous, end)
+    to_make_walls = find_turn_points(path)
+    best_path_squares = set(path)
+    already_tested_walls = set()
+    best_distance = distances[end]
+    while len(to_make_walls) > 0:
+        new_walls = walls.copy()
+        new_wall = to_make_walls.pop()
+        print(f"Making {new_wall} unavailable")
+        new_walls.add(new_wall)
+        new_distances, new_previous = dijkstra(new_walls, start, end)
+        if new_distances is not None and new_distances[end] == best_distance:
+            new_path = extract_path(new_previous, end)
+            best_path_squares.update(new_path)
+            to_make_walls.update(find_turn_points(new_path).difference(already_tested_walls))
+        already_tested_walls.add(new_wall)
+    size_y = start[1] + 2
+    size_x = end[0] + 2
+    for y in range(size_y):
+        for x in range(size_x):
+            if (x, y) == start:
+                print(START, end="")
+            elif (x, y) == end:
+                print(END, end="")
+            elif (x, y) in best_path_squares:
+                print("O" , end="")
+            elif (x, y) in walls:
+                print(WALL, end="")
+            else:
+                print(".", end="")
+        print()
+    print(f"Part 2: {len(best_path_squares)}")
+
+
+if __name__ == "__main__":
+    part1()
+    part2()
