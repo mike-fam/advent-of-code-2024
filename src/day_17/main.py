@@ -35,7 +35,7 @@ class Computer:
     program: list[int] = field(default_factory=list)
 
     def __post_init__(self):
-        self._output = []
+        self.output = []
 
     def combo_operand(self, operand):
         if 0 <= operand <= 3:
@@ -50,31 +50,39 @@ class Computer:
             raise ValueError(f"Invalid operand '{operand}'")
 
     def _adv(self, operand: int):
+        # print(f"adv({operand})")
         self.register_a //= 2 ** self.combo_operand(operand)
 
     def _bxl(self, operand: int):
+        # print(f"bxl({operand})")
         self.register_b ^= operand
 
     def _bst(self, operand: int):
+        # print(f"bst({operand})")
         self.register_b = self.combo_operand(operand) % 8
 
     def _jnz(self, operand: int):
+        # print(f"jnz({operand})")
         if self.register_a == 0:
             return
         self.pointer = self.combo_operand(operand)
         self.skip_pointer_move = True
 
     def _bxc(self, operand: int):
+        # print(f"bxc({operand})")
         self.register_b ^= self.register_c
 
     def _out(self, operand: int):
+        # print(f"out({operand})")
         output = self.combo_operand(operand) % 8
-        self._output.append(output)
+        self.output.append(output)
 
     def _bdv(self, operand: int):
+        # print(f"bdv({operand})")
         self.register_b = self.register_a // 2 ** self.combo_operand(operand)
 
     def _cdv(self, operand: int):
+        # print(f"cdv({operand})")
         self.register_c = self.register_a // 2 ** self.combo_operand(operand)
 
     def run_operation(self, opcode: int, operand: int):
@@ -111,7 +119,17 @@ class Computer:
                     instance.program = [int(num) for num in line.removeprefix("Program: ").split(",")]
         return instance
 
-    def run(self):
+    def copy(self):
+        copy = Computer()
+        copy.register_a = self.register_a
+        copy.register_b = self.register_b
+        copy.register_c = self.register_c
+        copy.pointer = self.pointer
+        copy.skip_pointer_move = self.skip_pointer_move
+        copy.program = self.program
+        return copy
+
+    def run(self, print_output=True):
         while self.pointer < len(self.program):
             opcode = self.program[self.pointer]
             operand = self.program[self.pointer + 1]
@@ -119,10 +137,29 @@ class Computer:
             if not self.skip_pointer_move:
                 self.pointer += 2
             self.skip_pointer_move = False
-            print(f"Register A: {self.register_a}")
-            print(f"Register B: {self.register_b}")
-            print(f"Register C: {self.register_c}")
-        print(",".join(str(output) for output in self._output))
+        if print_output:
+            print(",".join(str(output) for output in self.output))
+
+    def test_reg_a(self):
+        valid_reg_a = []
+        stack = [i for i in range(8)]
+        while len(stack) > 0:
+            test_reg_a = stack.pop()
+            copy = self.copy()
+            copy.register_a = test_reg_a
+            copy.run(print_output=False)
+            if all(output == self.program[-i] for i, output in enumerate(reversed(copy.output), start=1)):
+                if len(copy.output) == len(self.program):
+                    print(f"Found valid register a: {test_reg_a}")
+                    valid_reg_a.append(test_reg_a)
+                else:
+                    print(f"Found register '{test_reg_a}' with valid output tail {copy.output}")
+                    for next_test_reg_a in range(test_reg_a * 8, (test_reg_a + 1) * 8):
+                        stack.append(next_test_reg_a)
+        if len(valid_reg_a) == 0:
+            print("Cannot find a suitable register a value")
+        else:
+            print(f"Minimum register a value: {min(valid_reg_a)}")
 
 
 @timed
@@ -133,7 +170,8 @@ def part1():
 
 @timed
 def part2():
-    print(f"Part 2: {0}")
+    computer = Computer().load("input.txt")
+    computer.test_reg_a()
 
 
 if __name__ == "__main__":
