@@ -117,7 +117,7 @@ def dijkstra(walls: list[Position], start: Position, end: Position, size: int) \
                 continue
             neighbour_existing_distance = distances[neighbour]
             neighbour_new_distance = priority + 1
-            if neighbour_new_distance <= neighbour_existing_distance:
+            if neighbour_new_distance < neighbour_existing_distance:
                 queue.update_priority(neighbour, neighbour_new_distance)
                 distances[neighbour] = neighbour_new_distance
     return distances
