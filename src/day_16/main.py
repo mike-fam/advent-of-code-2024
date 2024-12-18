@@ -137,6 +137,8 @@ def dijkstra(walls: set[Position], start: Position, end: Position) \
             # Found end
             break
         for direction in DIRECTIONS:
+            if direction == invert(last_direction):
+                continue
             neighbour = move(current_position, direction)
             if neighbour in walls:
                 continue
